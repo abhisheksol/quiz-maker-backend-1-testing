@@ -139,3 +139,38 @@ exports.getUserResults = async (req, res) => {
 
 
 
+
+
+exports.getAllUserResults = async (req, res) => {
+    try {
+        // Query to fetch all user results
+        const result = await pool.query(
+            `SELECT 
+                s.user_id,
+                u.name AS user_name,
+                u.email AS user_email,
+                s.quiz_id,
+                q.title AS quiz_title,
+                s.score,
+                s.total_questions,
+                s.date_taken
+            FROM 
+                submissions s
+            JOIN 
+                users u ON s.user_id = u.id
+            JOIN 
+                quizzes q ON s.quiz_id = q.id
+            ORDER BY 
+                s.date_taken DESC`
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'No results found' });
+        }
+
+        res.status(200).json(result.rows); // Return all user results
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Server error' });
+    }
+};

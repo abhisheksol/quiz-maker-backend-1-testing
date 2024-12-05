@@ -16,7 +16,7 @@ router.post('/logout', userController.logoutUser);
 
 router.get('/:userId/results', userController.getUserResults);
 
-
+router.get('/results', userController.getAllUserResults);
 
 
 module.exports = router;
