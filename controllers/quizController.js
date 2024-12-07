@@ -174,49 +174,89 @@ exports.addQuestionToQuiz = async (req, res) => {
 
 
 exports.submitQuiz = async (req, res) => {
-    const { userId, quizId, answers } = req.body; // Get user ID, quiz ID, and answers from the request body
-    
-    console.log(userId);
-    
+    const { userId, quizId, score, totalQuestions } = req.body;
+
     // Validate request data
-    if (!userId || !quizId || !answers || answers.length === 0) {
-        return res.status(400).json({ error: 'Missing required fields' });
+    if (!userId || !quizId || score === undefined || totalQuestions === undefined) {
+        return res.status(400).json({ error: 'Missing required fields: userId, quizId, score, or totalQuestions' });
     }
 
     try {
-        // Fetch the correct answers for the quiz
-        const quizQuestions = await pool.query(
-            'SELECT id, correct_answer FROM questions WHERE quiz_id = $1',
-            [quizId]
-        );
-
-        // Calculate the score
-        let score = 0;
-        for (let i = 0; i < answers.length; i++) {
-            const question = quizQuestions.rows.find(q => q.id === answers[i].questionId);
-            if (question && question.correct_answer === answers[i].answer) {
-                score++; // Increment score if the answer is correct
-            }
-        }
-
-        // Fetch the total number of questions for the quiz
-        const totalQuestions = quizQuestions.rows.length;
-
-        // Insert the result (score) into the submissions table
+        // Insert the result into the submissions table
         const result = await pool.query(
-            'INSERT INTO submissions (user_id, quiz_id, score, total_questions) VALUES ($1, $2, $3, $4) RETURNING *',
+            `INSERT INTO submissions (user_id, quiz_id, score, total_questions) 
+             VALUES ($1, $2, $3, $4) RETURNING *`,
             [userId, quizId, score, totalQuestions]
         );
 
         res.status(201).json({
             message: 'Quiz submitted successfully!',
-            score: result.rows[0].score,
-            totalQuestions: totalQuestions,
-            dateTaken: result.rows[0].date_taken,
+            submission: result.rows[0], // Return the stored submission
         });
     } catch (err) {
         console.error(err.message);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: 'Server error while submitting the quiz' });
+    }
+};
+
+// const pool = require('../config/db'); // PostgreSQL connection
+
+exports.createQuizWithQuestions = async (req, res) => {
+    const { adminId, title, description, startDate, endDate, timeLimit, questions } = req.body;
+
+    // Validate input
+    if (!adminId || !title || !description || !startDate || !endDate || !timeLimit || !questions || questions.length === 0) {
+        return res.status(400).json({ error: "All fields including adminId and questions are required" });
+    }
+
+    try {
+        // Check if the adminId belongs to a valid admin
+        const admin = await pool.query('SELECT id FROM users WHERE id = $1 AND role = $2', [adminId, 'admin']);
+        if (admin.rows.length === 0) {
+            return res.status(403).json({ error: "Unauthorized: Admin ID is invalid" });
+        }
+
+        // Begin a transaction
+        await pool.query('BEGIN');
+
+        // Insert quiz data
+        const quizResult = await pool.query(
+            `INSERT INTO quizzes (title, description, start_date, end_date, time_limit, created_by, is_active) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+            [title, description, startDate, endDate, timeLimit, adminId, true]
+        );
+
+        const quizId = quizResult.rows[0].id;
+
+        // Insert questions and options
+        for (const question of questions) {
+            const questionResult = await pool.query(
+                `INSERT INTO questions (quiz_id, question_text, type, correct_answer) 
+                 VALUES ($1, $2, $3, $4) RETURNING id`,
+                [quizId, question.questionText, question.type, question.correctAnswer]
+            );
+
+            const questionId = questionResult.rows[0].id;
+
+            if (question.options && question.options.length > 0) {
+                for (const option of question.options) {
+                    await pool.query(
+                        `INSERT INTO options (question_id, option_text) 
+                         VALUES ($1, $2)`,
+                        [questionId, option]
+                    );
+                }
+            }
+        }
+
+        // Commit transaction
+        await pool.query('COMMIT');
+
+        res.status(201).json({ message: "Quiz created successfully with questions!", quizId });
+    } catch (err) {
+        console.error(err.message);
+        await pool.query('ROLLBACK'); // Rollback transaction on error
+        res.status(500).json({ error: "Server error while creating the quiz" });
     }
 };
 

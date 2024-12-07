@@ -47,13 +47,13 @@ QUIZ_APP=# INSERT INTO USERS (
     EMAIL,
     PASSWORD,
     ROLE
-) VALUES QUIZ_APP-# (
+) VALUES  (
     'Admin',
     'admin@example.com',
     'securepassword',
     'admin'
 ),
-QUIZ_APP-# (
+ (
     'User1',
     'user1@example.com',
     'securepassword',
@@ -69,7 +69,7 @@ QUIZ_APP=# INSERT INTO QUIZZES (
     END_DATE,
     CREATED_BY,
     IS_ACTIVE
-) VALUES QUIZ_APP-# (
+) VALUES  (
     'General Knowledge Quiz',
     'Test your general knowledge skills with this fun quiz!',
     20,
@@ -78,7 +78,7 @@ QUIZ_APP=# INSERT INTO QUIZZES (
     1,
     TRUE
 ),
-QUIZ_APP-# (
+ (
     'JavaScript Basics',
     'A quiz for beginners to test their JavaScript knowledge.',
     15,
@@ -94,25 +94,25 @@ QUIZ_APP=# INSERT INTO QUESTIONS (
     QUESTION_TEXT,
     TYPE,
     CORRECT_ANSWER
-) VALUES QUIZ_APP-# (
+) VALUES  (
     1,
     'What is the capital of France?',
     'multiple-choice',
     'Paris'
 ),
-QUIZ_APP-# (
+ (
     1,
     'True or False: The Earth is flat.',
     'true-false',
     'False'
 ),
-QUIZ_APP-# (
+ (
     1,
     'Fill in the blank: The tallest mountain in the world is _____.',
     'fill-in-the-blank',
     'Mount Everest'
 ),
-QUIZ_APP-# (
+ (
     2,
     'What is a variable in JavaScript?',
     'multiple-choice',
@@ -123,35 +123,35 @@ INSERT 0 4 QUIZ_APP=# QUIZ_APP=# -- Add Options for Multiple-Choice Questions
 QUIZ_APP=# INSERT INTO OPTIONS (
     QUESTION_ID,
     OPTION_TEXT
-) VALUES QUIZ_APP-# (
+) VALUES  (
     1,
     'Berlin'
 ),
-QUIZ_APP-# (
+ (
     1,
     'Madrid'
 ),
-QUIZ_APP-# (
+ (
     1,
     'Paris'
 ),
-QUIZ_APP-# (
+ (
     1,
     'Lisbon'
 ),
-QUIZ_APP-# (
+ (
     4,
     'A container for storing data values'
 ),
-QUIZ_APP-# (
+ (
     4,
     'A CSS framework'
 ),
-QUIZ_APP-# (
+ (
     4,
     'A JavaScript framework'
 ),
-QUIZ_APP-# (
+ (
     4,
     'A database'
 );
@@ -212,13 +212,13 @@ SELECT
     Q.IS_ACTIVE,
     Q.START_DATE,
     Q.END_DATE,
-    Q.TIME_LIMIT QUIZ_APP-#
+    Q.TIME_LIMIT 
 FROM
-    QUIZZES Q QUIZ_APP-#
+    QUIZZES Q 
     LEFT JOIN QUESTIONS QUE
-    ON Q.ID = QUE.QUIZ_ID QUIZ_APP-#
+    ON Q.ID = QUE.QUIZ_ID 
     JOIN USERS U
-    ON Q.CREATED_BY = U.ID QUIZ_APP-#
+    ON Q.CREATED_BY = U.ID 
 GROUP BY
     Q.ID,
     U.NAME;
@@ -232,23 +232,22 @@ ID | TITLE | DESCRIPTION | QUESTIONS_COUNT | CREATED_BY | IS_ACTIVE | START_DATE
 
 (2 ROWS) QUIZ_APP=#
 SELECT
-    QUIZ_APP-# Q.ID AS QUIZ_ID,
+     Q.ID AS QUIZ_ID,
     Q.TITLE,
     Q.DESCRIPTION,
     QUE.ID AS QUESTION_ID,
     QUE.QUESTION_TEXT,
     QUE.TYPE,
     QUE.CORRECT_ANSWER,
-    QUIZ_APP-# ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS QUIZ_APP-#
+     ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS 
 FROM
-    QUIZZES Q QUIZ_APP-#
+    QUIZZES Q 
     JOIN QUESTIONS QUE
-    ON Q.ID = QUE.QUIZ_ID QUIZ_APP-#
+    ON Q.ID = QUE.QUIZ_ID 
     LEFT JOIN OPTIONS O
-    ON QUE.ID = O.QUESTION_ID QUIZ_APP-#
+    ON QUE.ID = O.QUESTION_ID 
 WHERE
     Q.ID = 1 -- Replace 1 with the quiz ID you want
-    QUIZ_APP-#
 GROUP BY
     Q.ID,
     QUE.ID;
@@ -325,25 +324,25 @@ QUIZ_APP(# OPTION_TEXT TEXT NOT NULL
 QUIZ_APP(# );
 
 ERROR: RELATION "options" ALREADY EXISTS
-QUIZ_APP=# QUIZ_APP-# Q.ID AS QUIZ_ID, Q.TITLE, Q.DESCRIPTION, QUE.ID AS QUESTION_ID, QUE.QUESTION_TEXT, QUE.TYPE, QUE.CORRECT_ANSWER,
-QUIZ_APP-# QUIZ_APP-# ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS
-QUIZ_APP-# QUIZ_APP-# FROM QUIZZES Q
-QUIZ_APP-# QUIZ_APP-# JOIN QUESTIONS QUE ON Q.ID = QUE.QUIZ_ID
-QUIZ_APP-# QUIZ_APP-# LEFT JOIN OPTIONS O ON QUE.ID = O.QUESTION_ID
-QUIZ_APP-# QUIZ_APP-# WHERE Q.ID = 1 -- Replace 1 with the quiz ID you want
-QUIZ_APP-# QUIZ_APP-# GROUP BY Q.ID, QUE.ID;
+QUIZ_APP=#  Q.ID AS QUIZ_ID, Q.TITLE, Q.DESCRIPTION, QUE.ID AS QUESTION_ID, QUE.QUESTION_TEXT, QUE.TYPE, QUE.CORRECT_ANSWER,
+  ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS
+  FROM QUIZZES Q
+  JOIN QUESTIONS QUE ON Q.ID = QUE.QUIZ_ID
+  LEFT JOIN OPTIONS O ON QUE.ID = O.QUESTION_ID
+  WHERE Q.ID = 1 -- Replace 1 with the quiz ID you want
+  GROUP BY Q.ID, QUE.ID;
 
 ERROR: SYNTAX ERROR AT OR NEAR "quiz_app"
-LINE 1: QUIZ_APP-# Q.ID AS QUIZ_ID, Q.TITLE, Q.DESCRIPTION, QUE....
+LINE 1:  Q.ID AS QUIZ_ID, Q.TITLE, Q.DESCRIPTION, QUE....
 ^
 QUIZ_APP=# SELECT
-QUIZ_APP-# Q.ID AS QUIZ_ID, Q.TITLE, Q.DESCRIPTION, QUE.ID AS QUESTION_ID, QUE.QUESTION_TEXT, QUE.TYPE, QUE.CORRECT_ANSWER,
-QUIZ_APP-# ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS
-QUIZ_APP-# FROM QUIZZES Q
-QUIZ_APP-# JOIN QUESTIONS QUE ON Q.ID = QUE.QUIZ_ID
-QUIZ_APP-# LEFT JOIN OPTIONS O ON QUE.ID = O.QUESTION_ID
-QUIZ_APP-# WHERE Q.ID = 1 -- Replace 1 with the quiz ID you want
-QUIZ_APP-# GROUP BY Q.ID, QUE.ID;
+ Q.ID AS QUIZ_ID, Q.TITLE, Q.DESCRIPTION, QUE.ID AS QUESTION_ID, QUE.QUESTION_TEXT, QUE.TYPE, QUE.CORRECT_ANSWER,
+ ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS
+ FROM QUIZZES Q
+ JOIN QUESTIONS QUE ON Q.ID = QUE.QUIZ_ID
+ LEFT JOIN OPTIONS O ON QUE.ID = O.QUESTION_ID
+ WHERE Q.ID = 1 -- Replace 1 with the quiz ID you want
+ GROUP BY Q.ID, QUE.ID;
 
 QUIZ_ID | TITLE | DESCRIPTION | QUESTION_ID | QUESTION_TEXT | TYPE | CORRECT_ANSWER | OPTIONS
 
@@ -356,23 +355,23 @@ QUIZ_ID | TITLE | DESCRIPTION | QUESTION_ID | QUESTION_TEXT | TYPE | CORRECT_ANS
 
 (3 ROWS) QUIZ_APP=#
 SELECT
-    QUIZ_APP-# Q.ID AS QUIZ_ID,
+     Q.ID AS QUIZ_ID,
     Q.TITLE,
     Q.DESCRIPTION,
     QUE.ID AS QUESTION_ID,
     QUE.QUESTION_TEXT,
     QUE.TYPE,
     QUE.CORRECT_ANSWER,
-    QUIZ_APP-# ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS QUIZ_APP-#
+     ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS 
 FROM
-    QUIZZES Q QUIZ_APP-#
+    QUIZZES Q 
     JOIN QUESTIONS QUE
-    ON Q.ID = QUE.QUIZ_ID QUIZ_APP-#
+    ON Q.ID = QUE.QUIZ_ID 
     LEFT JOIN OPTIONS O
-    ON QUE.ID = O.QUESTION_ID QUIZ_APP-#
+    ON QUE.ID = O.QUESTION_ID 
 WHERE
     Q.ID = 3 -- Replace 1 with the quiz ID you want
-    QUIZ_APP-#
+    
 GROUP BY
     Q.ID,
     QUE.ID;
@@ -382,23 +381,23 @@ QUIZ_ID | TITLE | DESCRIPTION | QUESTION_ID | QUESTION_TEXT | TYPE | CORRECT_ANS
 ---------+-------+-------------+-------------+---------------+------+----------------+---------
 (0 ROWS) QUIZ_APP=#
 SELECT
-    QUIZ_APP-# Q.ID AS QUIZ_ID,
+     Q.ID AS QUIZ_ID,
     Q.TITLE,
     Q.DESCRIPTION,
     QUE.ID AS QUESTION_ID,
     QUE.QUESTION_TEXT,
     QUE.TYPE,
     QUE.CORRECT_ANSWER,
-    QUIZ_APP-# ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS QUIZ_APP-#
+     ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS 
 FROM
-    QUIZZES Q QUIZ_APP-#
+    QUIZZES Q 
     JOIN QUESTIONS QUE
-    ON Q.ID = QUE.QUIZ_ID QUIZ_APP-#
+    ON Q.ID = QUE.QUIZ_ID 
     LEFT JOIN OPTIONS O
-    ON QUE.ID = O.QUESTION_ID QUIZ_APP-#
+    ON QUE.ID = O.QUESTION_ID 
 WHERE
     Q.ID = 3 -- Replace 1 with the quiz ID you want
-    QUIZ_APP-#
+    
 GROUP BY
     Q.ID,
     QUE.ID;
@@ -410,23 +409,23 @@ QUIZ_ID | TITLE | DESCRIPTION | QUESTION_ID | QUESTION_TEXT | TYPE | CORRECT_ANS
 
 (1 ROW) QUIZ_APP=#
 SELECT
-    QUIZ_APP-# Q.ID AS QUIZ_ID,
+     Q.ID AS QUIZ_ID,
     Q.TITLE,
     Q.DESCRIPTION,
     QUE.ID AS QUESTION_ID,
     QUE.QUESTION_TEXT,
     QUE.TYPE,
     QUE.CORRECT_ANSWER,
-    QUIZ_APP-# ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS QUIZ_APP-#
+     ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS 
 FROM
-    QUIZZES Q QUIZ_APP-#
+    QUIZZES Q 
     JOIN QUESTIONS QUE
-    ON Q.ID = QUE.QUIZ_ID QUIZ_APP-#
+    ON Q.ID = QUE.QUIZ_ID 
     LEFT JOIN OPTIONS O
-    ON QUE.ID = O.QUESTION_ID QUIZ_APP-#
+    ON QUE.ID = O.QUESTION_ID 
 WHERE
     Q.ID = 3 -- Replace 1 with the quiz ID you want
-    QUIZ_APP-#
+    
 GROUP BY
     Q.ID,
     QUE.ID;
@@ -471,23 +470,23 @@ QUIZ_ID | TITLE | DESCRIPTION | QUESTION_ID | QUESTION_TEXT | TYPE | CORRECT_ANS
 
 (3 ROWS) QUIZ_APP=#
 SELECT
-    QUIZ_APP-# Q.ID AS QUIZ_ID,
+     Q.ID AS QUIZ_ID,
     Q.TITLE,
     Q.DESCRIPTION,
     QUE.ID AS QUESTION_ID,
     QUE.QUESTION_TEXT,
     QUE.TYPE,
     QUE.CORRECT_ANSWER,
-    QUIZ_APP-# ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS QUIZ_APP-#
+     ARRAY_AGG(O.OPTION_TEXT) AS OPTIONS 
 FROM
-    QUIZZES Q QUIZ_APP-#
+    QUIZZES Q 
     JOIN QUESTIONS QUE
-    ON Q.ID = QUE.QUIZ_ID QUIZ_APP-#
+    ON Q.ID = QUE.QUIZ_ID 
     LEFT JOIN OPTIONS O
-    ON QUE.ID = O.QUESTION_ID QUIZ_APP-#
+    ON QUE.ID = O.QUESTION_ID 
 WHERE
     Q.ID = 1 -- Replace 1 with the quiz ID you want
-    QUIZ_APP-#
+    
 GROUP BY
     Q.ID,
     QUE.ID;
@@ -511,7 +510,7 @@ QUIZ_APP(# );
 
 ERROR: RELATION "submissions" ALREADY EXISTS
 QUIZ_APP=# SELECT * SUBMISSIONS
-QUIZ_APP-# SELECT * SUBMISSIONS;
+ SELECT * SUBMISSIONS;
 
 ERROR: SYNTAX ERROR AT OR NEAR "submissions"
 LINE 1: SELECT * SUBMISSIONS
@@ -537,22 +536,22 @@ ID | USER_ID | QUIZ_ID | SCORE | TOTAL_QUESTIONS | DATE_TAKEN
 
 
 quiz_app=# SELECT
-quiz_app-#     s.user_id,
-quiz_app-#     u.name AS user_name,
-quiz_app-#     u.email AS user_email,
-quiz_app-#     s.quiz_id,
-quiz_app-#     q.title AS quiz_title,
-quiz_app-#     s.score,
-quiz_app-#     s.total_questions,
-quiz_app-#     s.date_taken
-quiz_app-# FROM
-quiz_app-#     submissions s
-quiz_app-# JOIN
-quiz_app-#     users u ON s.user_id = u.id
-quiz_app-# JOIN
-quiz_app-#     quizzes q ON s.quiz_id = q.id
-quiz_app-# ORDER BY
-quiz_app-#     s.date_taken DESC;
+     s.user_id,
+     u.name AS user_name,
+     u.email AS user_email,
+     s.quiz_id,
+     q.title AS quiz_title,
+     s.score,
+     s.total_questions,
+     s.date_taken
+ FROM
+     submissions s
+ JOIN
+     users u ON s.user_id = u.id
+ JOIN
+     quizzes q ON s.quiz_id = q.id
+ ORDER BY
+     s.date_taken DESC;
  user_id | user_name |         user_email         | quiz_id |        quiz_title         | score | total_questions |         date_taken
 ---------+-----------+----------------------------+---------+---------------------------+-------+-----------------+----------------------------
        5 | abhi      | abhisheksolapure@gmail.xom |       4 | kon banaga crore pati     |     0 |               1 | 2024-12-05 17:11:23.131124

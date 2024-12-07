@@ -23,4 +23,8 @@ router.post('/:id/questions', quizController.addQuestionToQuiz);
 
 router.post('/submit', quizController.submitQuiz);
 
+
+router.post('/create-with-questions', quizController.createQuizWithQuestions);
+
+
 module.exports = router;
