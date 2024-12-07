@@ -71,66 +71,60 @@ exports.getQuizDetails = async (req, res) => {
 
 // Update quiz (only for admin)
 exports.updateQuiz = async (req, res) => {
-    const { id } = req.params; // Get quiz ID from the URL
-    const { title, description, timeLimit, startDate, endDate, isActive } = req.body; // Get new quiz data from the request body
-    const adminId = req.session.userId; // Get the admin user ID from the session
-
-    if (!adminId) {
-        return res.status(401).json({ error: 'Unauthorized: Admin login required' });
-    }
+    const { id } = req.params; // Quiz ID from the URL
+    const { title, description, timeLimit, startDate, endDate, isActive } = req.body; // Updated quiz details
 
     try {
+        // Update the quiz in the database
         const result = await pool.query(
-            'UPDATE quizzes ' +
-            'SET title = $1, description = $2, time_limit = $3, start_date = $4, end_date = $5, is_active = $6 ' +
-            'WHERE id = $7 AND created_by = $8 ' +
-            'RETURNING *',
-            [title, description, timeLimit, startDate, endDate, isActive, id, adminId]
+            `UPDATE quizzes 
+             SET title = $1, description = $2, time_limit = $3, start_date = $4, end_date = $5, is_active = $6 
+             WHERE id = $7 
+             RETURNING *`,
+            [title, description, timeLimit, startDate, endDate, isActive, id]
         );
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ error: 'Quiz not found or you are not authorized to edit this quiz' });
+            return res.status(404).json({ error: 'Quiz not found' });
         }
 
         res.status(200).json({
             message: 'Quiz updated successfully',
-            quiz: result.rows[0], // Return the updated quiz
+            quiz: result.rows[0],
         });
     } catch (err) {
-        console.error(err.message);  // Log the error for debugging
+        console.error(err.message);
         res.status(500).json({ error: 'Server error' });
     }
 };
 
+
 // Delete quiz (only for admin)
 exports.deleteQuiz = async (req, res) => {
-    const { id } = req.params; // Get quiz ID from the URL
-    const adminId = req.session.userId; // Get the admin user ID from the session
-
-    if (!adminId) {
-        return res.status(401).json({ error: 'Unauthorized: Admin login required' });
-    }
+    const { id } = req.params; // Quiz ID from the URL
 
     try {
+        // Delete the quiz from the database
         const result = await pool.query(
-            'DELETE FROM quizzes ' +
-            'WHERE id = $1 AND created_by = $2 ' +
-            'RETURNING *',
-            [id, adminId]
+            `DELETE FROM quizzes 
+             WHERE id = $1 
+             RETURNING *`,
+            [id]
         );
 
         if (result.rowCount === 0) {
-            return res.status(404).json({ error: 'Quiz not found or you are not authorized to delete this quiz' });
+            return res.status(404).json({ error: 'Quiz not found' });
         }
 
         res.status(200).json({
             message: 'Quiz deleted successfully',
         });
     } catch (err) {
-        console.error(err.message);  // Log the error for debugging
+        console.error(err.message);
         res.status(500).json({ error: 'Server error' });
     }
 };
+
 
 exports.addQuestionToQuiz = async (req, res) => {
     const { id } = req.params; // Quiz ID from the URL
